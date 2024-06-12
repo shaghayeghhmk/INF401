@@ -1,0 +1,38 @@
+    .data
+DW:    .word  0
+DH:    .hword 0
+DB:    .byte 0
+
+    .text
+    .global main
+main:
+      LDR r0, LD_DW @ Charge l'adresse de DW dans r0
+      LDR r1, [r0] @ Charge la valeur de DW dans r1
+      BL EcrHexa32 @ Affiche la valeur de DW en hexadécimal
+      BL EcrZdecimal32 @ Affiche la valeur de DW en décimal
+
+      MOV r4, #-10 @ Valeur à stocker dans DW
+      LDR r5, LD_DW @ Charge l'adresse de DW dans r5
+      STR r4, [r5] @ Stocke la valeur -10 à l'adresse DW
+
+      LDR r0, LD_DH @ Charge l'adresse de DH dans r0
+      LDR r1, [r0] @ Charge la nouvelle valeur de DH dans r1
+      BL EcrHexa32 @ Affiche la nouvelle valeur de DH en hexadécimal
+      BL EcrZdecimal16 @ Affiche la nouvelle valeur de DH en décimal
+     
+      MOV r4, #120
+      LDR r5, LD_DH
+      STRB r4, [r5] @ Utilisation de STRB pour stocker un octet (8 bits)
+   
+      LDR r0, LD_DB
+      LDRB r1, [r0] @ Lecture de l'octet à partir de l'adresse DB
+      BL EcrHexa32
+      BL EcrZdecimal8
+
+fin:  B exit  @ terminaison immédiate du processus (plus tard on saura faire mieux)
+
+LD_DW:   .word DW
+LD_DH:   .word DH
+LD_DB:   .word
+ DB
+

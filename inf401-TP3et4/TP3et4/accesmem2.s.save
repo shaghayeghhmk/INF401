@@ -1,0 +1,28 @@
+s
+.data
+D1: .word 266
+D2: .hword 42
+D3: .byte 12
+
+.text
+.global main
+main:
+    @ Affichage de l'adresse de D1
+    MOV r1, r3
+    BL EcrHexa32
+
+    @ Chargement de la valeur en mémoire à l'adresse D1 dans r4
+    LDR r4, [r3]
+    @ Affichage de la valeur lue à l'adresse D1
+    MOV r1, r4
+    BL EcrNdecimal32
+
+    @ Chargement de l'adresse D2 en r5
+    LDR r5, LD_D2
+    @ Affichage de l'adresse de D2
+    MOV r1, r5
+    BL EcrHefin: 
+    B Exit
+LD_D1: .word D1
+LD_D2: .word D2
+LD_D3: .word D3

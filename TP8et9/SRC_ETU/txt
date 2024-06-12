@@ -1,0 +1,258 @@
+@  Importation des,constantes symboliques WIDTH, HEIGHT, BYTES, BYTES_PER_LINE          
+#include "image_bits_include.h"                                                         
+                                                                                        
+                 .global symetrie_octet                                                 
+                 .global permuter_cols                                                  
+                 .global symetrie_axe_v                                                 
+                 .global permuter_ligne                                                 
+                 .global symetrie_axe_h                                                 
+                 .global symetrie_axe_h                                                 
+                 .global permuter_lignes                                                
+                 .global symetrie_axe_v                                                 
+                                                                                        
+                 .text                                                                  
+                                                                                        
+@ r0 : parametre reçu adresse                                                           
+@ r1 : variable locale octet                                                            
+                                                                                        
+#ifndef C_SYMETRIE_OCTET                                                                
+#ifndef SYMTAB                                                                          
+                                                                                        
+@  Version avec opérations bit à bit                                                    
+                                                                                        
+symetrie_octet:    
+
+
+                 @ à compléter
+
+                                                                                        
+#else  // SYMTAB                                                                        
+                                                                                        
+@ Version tabulée                                                                       
+symetrie_octet:                                                                         
+#endif  // SYMTAB                                                                       
+#endif  // C_SYMETRIE_OCTET                                                             
+@ r0 : parametre tab                                                                    
+@ r1 : parametre col                                                                    
+                                                                                        
+#ifndef C_PERMUTER_COLS                                                                 
+                                                                                        
+permuter_cols:    
+
+
+
+                 @ à compléter
+
+
+
+#endif // C_PERMUTER_COLS                                                               
+                                                                                        
+@ r0 : paramètre image                                                                  
+                                                                                        
+#ifndef C_SYMETRIE_AXE_V                                                                
+symetrie_axe_v:         
+
+
+                 @ à compléter
+
+
+                                                                                        
+#endif // C_SYMETRIE_AXE_V                                                              
+@ r0 : tab                                                                              
+@ r1 : li                                                                               
+                                                                                        
+#ifndef C_PERMUTER_LIGNES                                                               
+permuter_lignes:                                                                        
+
+                 @ à compléter
+
+
+
+#endif // C_PERMUTER_LIGNES                                                             
+                                                                                        
+@ r0 : paramètre image                                                                  
+                                                                                        
+#ifndef  C_SYMETRIE_AXE_H                                                               
+symetrie_axe_h:                                                                         
+
+
+                 @ à compléter
+
+#endif   // C_SYMETRIE_AXE_H 
+
+
+
+
+
+
+
+
+@  Importation des,constantes symboliques WIDTH, HEIGHT, BYTES, BYTES_PER_LINE          
+#include "image_bits_include.h"                                                         
+                                                                                        
+                 .global symetrie_octet                                                 
+                 .global permuter_cols                                                  
+                 .global symetrie_axe_v                                                 
+                 .global permuter_ligne                                                 
+                 .global symetrie_axe_h                                                 
+                 .global symetrie_axe_h                                                 
+                 .global permuter_lignes                                                
+                 .global symetrie_axe_v                                                 
+                                                                                        
+                 .text                                                                  
+                                                                                        
+@ r0 : parametre reçu adresse                                                           
+@ r1 : variable locale octet                                                            
+                                                                                        
+#ifndef C_SYMETRIE_OCTET                                                                
+#ifndef SYMTAB                                                                          
+                                                                                        
+@  Version avec opérations bit à bit                                                    
+                                                                                        
+symetrie_octet:
+    MOV r1, r0              @ r1 contient l'octet à symétriser
+    MOV r2, #0              @ r2 contiendra le nouvel octet symétrisé
+    MOV r3, #8              @ Nombre de bits à traiter
+    
+loop_symetrie_octet:
+    LSL r2, r2, #1          @ Décale r2 d'un bit à gauche pour ajouter un nouveau bit
+    LSR r4, r1, #7          @ Récupère le bit le plus à gauche de r1
+    ORR r2, r2, r4          @ Ajoute le bit récupéré à r2
+    LSL r1, r1, #1          @ Décale r1 d'un bit à gauche pour traiter le prochain
+    SUBS r3, r3, #1         @ Décrémente le compteur
+    bne loop_symetrie_octet @ Si r3 n'est pas à zéro, continue la boucle
+    
+    MOV r0, r2              @ Retourne l'octet symétrisé dans r0
+    BX lr                   @ Retour à l'appelant
+
+
+
+
+
+
+#else  // SYMTAB                                                                        
+                                                                                        
+@ Version tabulée                                                                       
+symetrie_octet:    
+
+
+
+
+
+
+#endif  // SYMTAB                                                                       
+#endif  // C_SYMETRIE_OCTET                                                             
+@ r0 : parametre tab                                                                    
+@ r1 : parametre col                                                                    
+                                                                                        
+#ifndef C_PERMUTER_COLS                                                                 
+                                                                                        
+permuter_cols:                                                                          
+#endif // C_PERMUTER_COLS                                                               
+                                                                                        
+@ r0 : paramètre image                                                                  
+                                                                                        
+#ifndef C_SYMETRIE_AXE_V                                                                
+
+symetrie_axe_v:
+    LDR r1, [r0, #0]        @ r1 contient le nombre de lignes
+    LDR r2, [r0, #4]        @ r2 contient le nombre de colonnes
+    SUB r3, r1, #1          @ r3 est l'indice de la dernière ligne
+    MOV r4, #0              @ r4 est l'indice de la première ligne
+    
+loop_symetrie_axe_v:
+    CMP r4, r3              @ Si r4 >= r3, on a terminé
+    bge end_symetrie_axe_v
+    
+    @ Échange des lignes
+    LDR r5, [r0, r4, LSL #3]   @ Charger la ligne du haut
+    LDR r6, [r0, r3, LSL #3]   @ Charger la ligne du bas
+    
+    STR r5, [r0, r3, LSL #3]   @ Écrire la ligne du haut à la place de la ligne du bas
+    STR r6, [r0, r4, LSL #3]   @ Écrire la ligne du bas à la place de la ligne du haut
+    
+    ADD r4, r4, #1           @ Aller à la ligne suivante
+    SUB r3, r3, #1           @ Aller à la ligne précédente
+    
+    B loop_symetrie_axe_v   @ Reprendre la boucle
+    
+end_symetrie_axe_v:
+    BX lr                   @ Retour à l'appelant
+
+
+
+                                                                                        
+#endif // C_SYMETRIE_AXE_V                                                              
+@ r0 : tab                                                                              
+@ r1 : li                                                                               
+                                                                                        
+#ifndef C_PERMUTER_LIGNES                                                               
+permuter_lignes:                                                                        
+                                                                                        
+#endif // C_PERMUTER_LIGNES                                                             
+                                                                                        
+@ r0 : paramètre image                                                                  
+                                                                                        
+#ifndef  C_SYMETRIE_AXE_H                                                               
+symetrie_axe_h:
+
+symetrie_axe_h:
+    LDR r1, [r0, #0]        @ r1 contient le nombre de lignes
+    LDR r2, [r0, #4]        @ r2 contient le nombre de colonnes
+    
+    MOV r3, #0              @ r3 est l'indice de la première ligne
+    
+loop_symetrie_axe_h:
+    CMP r3, r1              @ Si r3 >= nombre de lignes, on a terminé
+    BGE end_symetrie_axe_h
+    
+    @ Pour chaque ligne, symétriser les octets
+    LDR r4, [r0, r3, LSL #3]   @ Charger la ligne
+    
+    MOV r5, #0              @ r5 est le nouvel octet symétrisé
+    MOV r6, r2              @ r6 est le nombre de colonnes
+    
+loop_symetrie_ligne:
+    CMP r6, #0              @ Si r6 <= 0, on a terminé
+    ble loop_next_ligne
+    
+    @ Inverser l'octet
+    LDRB r7, [r4, r6, LSR #3]  @ Charger l'octet
+    BL symetrie_octet       @ Symétriser l'octet
+    STRB r7, [r4, r5, LSL #3]  @ Écrire l'octet symétrisé
+    
+    ADD r5, r5, #1          @ Aller à l'octet suivant
+    SUB r6, r6, #8          @ Décrémente le compteur de colonnes
+    
+    B loop_symetrie_ligne
+    
+loop_next_ligne:
+    ADD r3, r3, #1          @ Aller à la ligne suivante
+    B loop_symetrie_axe_h
+    
+end_symetrie_axe_h:
+    BX lr                   @ Retour à l'appelant
+
+
+
+                                                                                        
+#endif   // C_SYMETRIE_AXE_H 
+
+
+
+
+
+
+
+                                                                        
+#include "image_bits_include.h"                                         
+                                                                        
+                .text                                                   
+                                                                        
+                .balign 4                                               
+                                                                        
+#ifndef C_AFFICHER_CONTENU                                              
+                .global  afficher_contenu                               
+                                                                        
+afficher_contenu:                                                       
+#endif   // C_AFFICHER_CONTENU                                          
